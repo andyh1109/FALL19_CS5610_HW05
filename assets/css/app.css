@@ -7,3 +7,18 @@
     text-align: center;
 }
 
+.restart {
+    text-align: center;
+    background: red;
+    padding: 0;
+    border: none;
+}
+
+.tile {
+    height : 100px;
+    width : 100px;
+    background: orange;
+    font-size : 50px;
+    border-style: none;
+    margin-right: 0;
+}
