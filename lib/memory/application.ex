@@ -10,7 +10,6 @@ defmodule Memory.Application do
     children = [
       # Start the endpoint when the application starts
       MemoryWeb.Endpoint,
-      MemoryWeb.BackupAgent
       # Starts a worker by calling: Memory.Worker.start_link(arg)
       # {Memory.Worker, arg},
     ]

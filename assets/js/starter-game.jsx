@@ -2,159 +2,158 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import _ from 'lodash';
 
-export default function game_init(root, channel) {
-  ReactDOM.render(<Starter channel = {channel}/>, root);
+export default function game_init(root) {
+  ReactDOM.render(<Starter />, root);
+}
+
+
+function Tile(props) {
+	if (!props.flipped) {
+		return <button className="tile" onClick={() => props.onClick(this, props.row, props.col, props.tileletter)}></button>
+	}
+	else {
+		return <button className="tile">{props.tileletter}</button>
+	}
 }
 
 
 class Starter extends React.Component {
 
-	constructor(props) {
-		super(props);
+  constructor(props) {
+    super(props);
+ 
+    let grid = this.initiateBoard();
+
+    this.state = { tiles: grid, 
+	    clicks: 0, 
+	    first: "", 
+	    second: "",
+		firstRow: 0,
+	    firstCol: 0,
+	    secondRow: 0,
+	    secondCol: 0};
+  }
+
+  initiateBoard() {
 	
-		this.channel = props.channel;
-	
-	var mat = [];
-	for (var i = 0; i < 16; i++) {
-		mat[i] = new Array(5);
-	}
-	
-		this.state = {
-		  tiles: mat,
-			clicks: 0,
-			first: [],
-			second: [],
-		};
-	
-		this.channel
-		.join()
-		.receive("ok", resp=> {
-		  console.log("Joined successfully", resp.game);
-		  this.setState(resp.game);
-		})
-		.receive("error", resp => { console.log("Unable to join", resp); });
-	  }
-	
-	  tileClick(index) {
-		let tile = this.state.tiles[index];
-	
-		this.channel.push("click", {tile: tile})
-		  .receive("ok", resp => {console.log("click", resp.game);
-								  this.setState(resp.game);
-								});
-	  }
-	
-	  checkMatch(){
-		if (this.state.first[0] == this.state.second[0]) {
-		  this.channel.push("reset_click", {})
-								  .receive("ok", resp => {console.log("match, reset_clicked", resp.game);
-														  this.setState(resp.game);
-														});
-		} else {
-		setTimeout(() => {this.channel.push("not_match", {})
-								  .receive("ok", resp => {console.log("not a match", resp.game);
-														  this.setState(resp.game);
-														});}, 800); 
-	 }
-		}
-	
-	  // sets the game back to a starting state with a new set of random tiles
-	  restartGame() {
-		   this.channel.push("new", {})
-		 .receive("ok", resp => {console.log("new", resp.game);
-								  this.setState(resp.game);});
-	  }
-	
-	  render() {
-	
-	 let tiles = this.state.tiles;
-	
-	 let restartbutton = <button className="restart" onClick={this.restartGame.bind(this)}> Restart Game </button>;
-	
-	
-	
-	 let first_letter = this.state.first[0];
-	 let sec_letter =  this.state.second[0];
-	
-	 if (first_letter != null && sec_letter != null) {
-		this.checkMatch();
-	 }
-	
-	return (
-			<div>
-					<h1> Memory Matching </h1>
-		  <div className="row">
-				  <div className="column">Clicks: {this.state.clicks}</div>
-				  <div className="column">{restartbutton}</div>
-				</div>
-			   <div className="row">
-				  <div className="column"> {<Tile hidden={tiles[0][3]}
-											  letter={tiles[0][0]} 
-			   onClick={this.tileClick.bind(this, tiles[0][4])} />} </div>
-				  <div className="column"> {<Tile hidden={tiles[1][3]}
-											  letter={tiles[1][0]}
-			   onClick={this.tileClick.bind(this, tiles[1][4])} />} </div>
-				  <div className="column"> {<Tile hidden={tiles[2][3]}
-											  letter={tiles[2][0]}
-			   onClick={this.tileClick.bind(this, tiles[2][4])} />} </div>
-				 <div className="column"> {<Tile hidden={tiles[3][3]}
-											letter={tiles[3][0]}
-			 onClick={this.tileClick.bind(this, tiles[3][4])} />} </div>
-			  </div>
-				<div className="row">
-				  <div className="column"> {<Tile hidden={tiles[4][3]}
-											  letter={tiles[4][0]}
-			   onClick={this.tileClick.bind(this, tiles[4][4])} />} </div>
-				  <div className="column"> {<Tile hidden={tiles[5][3]}
-											  letter={tiles[5][0]}
-			   onClick={this.tileClick.bind(this, tiles[5][4])} />} </div>
-				  <div className="column"> {<Tile hidden={tiles[6][3]}
-											  letter={tiles[6][0]}
-			   onClick={this.tileClick.bind(this, tiles[6][4])} />} </div>
-				  <div className="column"> {<Tile hidden={tiles[7][3]}
-											  letter={tiles[7][0]}
-			   onClick={this.tileClick.bind(this, tiles[7][4])} />} </div>
-			  </div>
-				<div className="row">
-				  <div className="column"> {<Tile hidden={tiles[8][3]}
-											  letter={tiles[8][0]}
-			   onClick={this.tileClick.bind(this, tiles[8][4])} />} </div>
-				  <div className="column"> {<Tile hidden={tiles[9][3]}
-											  letter={tiles[9][0]}
-			   onClick={this.tileClick.bind(this, tiles[9][4])} />} </div>
-				  <div className="column"> {<Tile hidden={tiles[10][3]}
-											  letter={tiles[10][0]}
-			   onClick={this.tileClick.bind(this, tiles[10][4])} />} </div>
-				  <div className="column"> {<Tile hidden={tiles[11][3]}
-											  letter={tiles[11][0]}
-			   onClick={this.tileClick.bind(this, tiles[11][4])} />} </div>
-			  </div>
-				<div className="row">
-				 <div className="column"> {<Tile hidden={tiles[12][3] }
-											letter={tiles[12][0] }
-			 onClick={this.tileClick.bind(this, tiles[12][4])} />} </div>
-				  <div className="column"> {<Tile hidden={tiles[13][3]}
-											  letter={tiles[13][0]}
-			   onClick={this.tileClick.bind(this, tiles[13][4])} />} </div>
-				  <div className="column"> {<Tile hidden={tiles[14][3]}
-											  letter={tiles[14][0]}
-			   onClick={this.tileClick.bind(this, tiles[14][4])} />} </div>
-				  <div className="column"> {<Tile hidden={tiles[15][3]}
-											  letter={tiles[15][0]}
-			   onClick={this.tileClick.bind(this, tiles[15][4])} />} </div>
-			  </div>
-			</div>
-		);
-	  
-	  }
-	}
-	
-	function Tile(props) {
-		if (props.hidden) {
-			return <button className="tile" onClick={() => props.onClick(this, props.index)}>???</button>
-		}
-		else {
-			return <button className="tile">{props.letter}</button>
+	let allLetters = ["a", "a", "b", "b", "c", "c", "d", "d", 
+					 "e", "e", "f", "f", "g", "g", "h", "h"]; 
+	let grid = []; 
+
+	for (let row = 0; row < 4; row++) {
+		grid[row] = [];
+		for (let col = 0; col < 4; col++) {
+			let letter = _.sample(allLetters); 
+			allLetters.splice(allLetters.indexOf(letter), 1);
+			grid[row].push(<Tile onClick={() => this.tileClick(row, col, letter)} 
+				row={row} col={col} flipped={false} tileletter={letter}/>); 
 		}
 	}
+	
+	return grid;
+  }
+
+  revertClicked() {
+	this.setState({first : "", 
+				second : "", 
+				firstRow : 0, 
+				firstCol : 0, 
+
+				secondRow : 0, 
+				secondCol : 0});
+  }
+
+  restart() {
+	this.setState({tiles : this.initiateBoard(), clicks : 0});
+	this.revertClicked();
+  }
+ 
+  tileClick(row, col, letter) {
+	this.setState({clicks : this.state.clicks + 1});	
+	let curGrid = this.state.tiles.slice();
+
+	if (this.state.first === "") { 	
+		curGrid[row][col] = <Tile onClick={() => this.tileClick(row, col, letter)}
+					row={row} col={col} flipped={true} tileletter={letter}/>;
+
+		this.setState({first: letter, firstRow : row, firstCol : col, tiles : curGrid});
+		
+	} else  { 
+		curGrid[row][col] = <Tile onClick={() => this.tileClick(row, col, letter)}
+					row={row} col={col} flipped={true} tileletter={letter}/>;
+		
+		this.setState({sec : letter, secondRow : row, secondCol : col, tiles : curGrid});
+		this.isMatch(letter, row, col);
+	}
+  }
+	
+  isMatch(letter, row, col){
+		
+	let grid = this.state.tiles.slice();
+ 
+	let first = this.state.first;
+	let firstRow = this.state.firstRow;
+	let firstCol = this.state.firstCol;
+
+	if (first === letter) {
+		this.revertClicked();
+	} 
+	  else { 
+		setTimeout(() => {
+			grid[firstRow][firstCol] = <Tile onClick={() => this.tileClick(firstRow, firstCol, first)}
+				row={firstRow} col={firstCol} flipped={false} tileletter={first}/>;
+	
+			grid[row][col] = <Tile onClick={() => this.tileClick(row, col, letter)}
+				row={row} col={col} flipped={false} tileletter={letter}/>;
+			
+			this.setState({tiles : grid});
+	     		}, 600);
+		  this.setState({tiles : grid});
+		  this.revertClicked();		
+	}
+  }
+
+
+
+  render() {
+	
+	let grid = this.state.tiles.slice();
+	let restartButton = <button className="restart" onClick={() =>this.restart()}> Restart</button>;
+
+	return (  
+		<div>
+    	  	  <h1 align="center"> Memory Game </h1>
+	  	 
+	 	  <div className="row">
+	    	  <div className="column"> {grid[0][0]} </div>
+	    	  <div className="column"> {grid[0][1]} </div>
+	    	  <div className="column"> {grid[0][2]} </div>
+	   	  	  <div className="column"> {grid[0][3]} </div>
+
+	  	  </div>
+	  	  <div className="row">
+	    	  <div className="column"> {grid[1][0]} </div>
+	    	  <div className="column"> {grid[1][1]} </div>
+	    	  <div className="column"> {grid[1][2]} </div>
+	    	  <div className="column"> {grid[1][3]} </div>
+	  	  </div>
+	  	  <div className="row">
+	    	  <div className="column"> {grid[2][0]} </div>
+	    	  <div className="column"> {grid[2][1]} </div>
+	    	  <div className="column"> {grid[2][2]} </div>
+	    	  <div className="column"> {grid[2][3]} </div>
+	  	  </div>
+	  	  <div className="row">
+	   	      <div className="column"> {grid[3][0]} </div>
+	    	  <div className="column"> {grid[3][1]} </div>
+	    	  <div className="column"> {grid[3][2]} </div>
+	    	  <div className="column"> {grid[3][3]} </div>
+	  	  </div>
+			<div className="column">Clicks used: {this.state.clicks}</div>
+			<div className="restart">{restartButton}</div>
+
+		</div>
+	);
+  }
+}
   
