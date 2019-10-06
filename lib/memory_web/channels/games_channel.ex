@@ -18,7 +18,6 @@ defmodule MemoryWeb.GamesChannel do
 end
 
 
-  # handler for tileClick -> on_click
   def handle_in("click", %{ "tile" => tile }, socket) do
     game = Game.on_click(tile, socket.assigns[:game])
     socket = assign(socket, :game, game)
@@ -27,7 +26,6 @@ end
     {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
   end
 
-  # handler for checkMatch -> reset_clicked
   def handle_in("reset_click", %{  }, socket) do
     game = Game.reset_clicked(socket.assigns[:game])
     socket = assign(socket, :game, game)
@@ -36,7 +34,6 @@ end
     {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
   end
 
-  # handler for checkMatch -> not_match
   def handle_in("not_match", %{  }, socket) do
     game = Game.not_match(socket.assigns[:game])
     socket = assign(socket, :game, game)
@@ -45,7 +42,6 @@ end
     {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
   end
 
-  # handler for restartGame -> new
   def handle_in("new", %{}, socket) do
     game = Game.new()
     socket = assign(socket, :game, game)
